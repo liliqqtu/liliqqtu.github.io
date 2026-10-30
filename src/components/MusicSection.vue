@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { sound } from '../utils/audio'
+import { bgm, bgmState } from '../utils/bgmManager'
 import { lyricsData } from '../data/lyrics'
 import { 
   Music, Play, Pause, ExternalLink, Disc, Sparkles, 
@@ -15,11 +16,7 @@ const props = defineProps({
   }
 })
 
-const isPlaying = ref(false)
-const audioElement = ref(null)
 const currentSong = ref(props.music.songs[0] || null)
-const currentTime = ref(0)
-const duration = ref(204) // 默认 3分24秒 (204秒)
 const lyricsContainer = ref(null)
 const activeTab = ref('lyrics') // 'lyrics' | 'info'
 const showAll = ref(false)
@@ -34,7 +31,7 @@ const formatTime = (secs) => {
 
 // 当前播放歌词的高亮行索引
 const currentLyricIndex = computed(() => {
-  const t = currentTime.value
+  const t = bgmState.currentTime
   let idx = 0
   for (let i = 0; i < lyricsData.length; i++) {
     if (t >= lyricsData[i].time) {
@@ -46,73 +43,37 @@ const currentLyricIndex = computed(() => {
   return idx
 })
 
-// 音频进度监听
-const onTimeUpdate = () => {
-  if (audioElement.value) {
-    currentTime.value = audioElement.value.currentTime
-    if (audioElement.value.duration && !isNaN(audioElement.value.duration)) {
-      duration.value = audioElement.value.duration
-    }
-
-    // 歌词自动平滑居中滚动
-    if (lyricsContainer.value) {
-      const activeEl = lyricsContainer.value.querySelector('.active-lyric')
-      if (activeEl) {
-        activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
+// 监听当前歌词变化，仅在内部容器内平滑滚动，绝不影响浏览器页面全局滚动！
+watch(currentLyricIndex, () => {
+  if (lyricsContainer.value && activeTab.value === 'lyrics') {
+    const activeEl = lyricsContainer.value.querySelector('.active-lyric')
+    if (activeEl) {
+      const container = lyricsContainer.value
+      const targetScrollTop = activeEl.offsetTop - container.offsetTop - (container.clientHeight / 2) + (activeEl.clientHeight / 2)
+      container.scrollTo({ top: targetScrollTop, behavior: 'smooth' })
     }
   }
-}
-
-const onAudioLoaded = () => {
-  if (audioElement.value && audioElement.value.duration) {
-    duration.value = audioElement.value.duration
-  }
-}
+})
 
 // 点击歌词跳转播放
 const seekLyric = (time) => {
-  if (audioElement.value) {
-    sound.playClick()
-    audioElement.value.currentTime = time
-    if (!isPlaying.value) {
-      togglePlay()
-    }
+  sound.playClick()
+  bgm.seek(time)
+  if (!bgmState.isPlaying) {
+    bgm.toggle()
   }
 }
 
 // 进度条拖拽/点击
 const onSeekSlider = (e) => {
   const targetTime = parseFloat(e.target.value)
-  if (audioElement.value) {
-    audioElement.value.currentTime = targetTime
-    currentTime.value = targetTime
-  }
+  bgm.seek(targetTime)
 }
 
-// 播放/暂停
+// 播放/暂停（全局同步）
 const togglePlay = () => {
-  if (!audioElement.value) return
-  
   sound.playClick()
-  if (isPlaying.value) {
-    audioElement.value.pause()
-    isPlaying.value = false
-  } else {
-    audioElement.value.play().then(() => {
-      isPlaying.value = true
-    }).catch(() => {
-      // 若本地未放入音频，提供友好弹窗并可直接打开网易云
-      if (confirm('本地尚未放入音频文件（可将 MP3 放入 public/audio/ice_cream.mp3 开启内嵌播放）。是否立即前往网易云音乐在线试听原曲？')) {
-        window.open(currentSong.value.neteaseUrl, '_blank')
-      }
-    })
-  }
-}
-
-const onAudioEnded = () => {
-  isPlaying.value = false
-  currentTime.value = 0
+  bgm.toggle()
 }
 
 const toggleShowAll = () => {
@@ -135,7 +96,7 @@ const toggleShowAll = () => {
           <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">数字创意与 AI 音乐 (网易云音乐人)</h2>
         </div>
         <p class="text-xs text-slate-400 max-w-sm">
-          探索生成式 AI 提示词编曲实践，已在网易云音乐正式发行上线。
+          探索生成式 AI 提示词编曲实践，已在网易云音乐正式发行上线。已与全站背景音播放同步。
         </p>
       </div>
 
@@ -150,31 +111,31 @@ const toggleShowAll = () => {
             <!-- 唱片机外壳与黑胶唱片联动效果 -->
             <div class="relative w-full max-w-[320px] aspect-square bg-[#0b0e14] border-2 border-pixel-border p-3 shadow-pixel flex items-center justify-center group/cover">
               
-              <!-- 专辑封面大图 (支持 PNG 覆盖与 SVG 默认降级) -->
+              <!-- 专辑封面大图 (优先加载本地 ice_cream.png，若无则自动降级展示像素 SVG) -->
               <div class="relative w-full h-full border border-slate-700 overflow-hidden shadow-inner bg-slate-900">
                 <img 
                   :src="currentSong?.cover || './images/music/ice_cream.png'" 
                   @error="(e) => e.target.src = './images/music/ice_cream.svg'"
                   alt="Album Cover"
                   class="w-full h-full object-cover transition-transform duration-500"
-                  :class="{ 'scale-105': isPlaying }"
+                  :class="{ 'scale-105': bgmState.isPlaying }"
                 />
 
-                <!-- 播放时的黑胶小彩蛋角标 -->
+                <!-- 播放状态角标 -->
                 <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/80 border border-white/20 font-pixel text-[9px] text-rose-300 flex items-center gap-1.5">
-                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500" :class="{ 'animate-ping': isPlaying }"></span>
-                  <span>{{ isPlaying ? 'PLAYING' : 'OFFICIAL CD' }}</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500" :class="{ 'animate-ping': bgmState.isPlaying }"></span>
+                  <span>{{ bgmState.isPlaying ? 'BGM PLAYING' : 'OFFICIAL CD' }}</span>
                 </div>
 
                 <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 border border-white/20 font-pixel text-[9px] text-pixel-amber">
-                  AI 生成单曲
+                  AI 原创单曲
                 </div>
               </div>
 
-              <!-- 黑胶唱片露出一角动效 -->
+              <!-- 黑胶唱片露出一角动效 (与全局音乐同步旋转) -->
               <div 
                 class="absolute -right-5 top-8 w-32 h-32 rounded-full border-4 border-slate-900 bg-neutral-900 hidden sm:flex items-center justify-center -z-10 shadow-pixel-sm transition-all duration-700"
-                :class="isPlaying ? 'translate-x-6 rotate-180 animate-spin' : 'translate-x-0'"
+                :class="bgmState.isPlaying ? 'translate-x-6 rotate-180 animate-spin' : 'translate-x-0'"
                 style="animation-duration: 4s;"
               >
                 <div class="w-10 h-10 rounded-full border-2 border-rose-500 bg-rose-950 flex items-center justify-center">
@@ -191,17 +152,17 @@ const toggleShowAll = () => {
                 <input 
                   type="range" 
                   min="0" 
-                  :max="duration" 
+                  :max="bgmState.duration" 
                   step="0.1"
-                  :value="currentTime" 
+                  :value="bgmState.currentTime" 
                   @input="onSeekSlider"
                   class="w-full h-1.5 bg-slate-800 rounded-none appearance-none cursor-pointer accent-rose-500"
                 />
                 <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
-                  <span class="text-rose-400">{{ formatTime(currentTime) }}</span>
+                  <span class="text-rose-400">{{ formatTime(bgmState.currentTime) }}</span>
                   <span class="flex items-center gap-1">
                     <Clock class="w-3 h-3 text-slate-500" />
-                    <span>{{ formatTime(duration) }}</span>
+                    <span>{{ formatTime(bgmState.duration) }}</span>
                   </span>
                 </div>
               </div>
@@ -212,8 +173,8 @@ const toggleShowAll = () => {
                   @click="togglePlay"
                   class="pixel-btn px-4 py-2 bg-rose-600 text-white border-rose-600 hover:bg-rose-500 text-xs font-bold gap-2"
                 >
-                  <component :is="isPlaying ? Pause : Play" class="w-4 h-4 fill-current" />
-                  <span>{{ isPlaying ? '暂停试听' : '试听原曲' }}</span>
+                  <component :is="bgmState.isPlaying ? Pause : Play" class="w-4 h-4 fill-current" />
+                  <span>{{ bgmState.isPlaying ? '暂停播放' : '播放背景音' }}</span>
                 </button>
 
                 <div class="flex items-center gap-2">
@@ -244,15 +205,6 @@ const toggleShowAll = () => {
 
             </div>
 
-            <!-- HTML5 audio 元素 -->
-            <audio 
-              ref="audioElement" 
-              :src="currentSong?.audioSrc" 
-              @timeupdate="onTimeUpdate"
-              @loadedmetadata="onAudioLoaded"
-              @ended="onAudioEnded"
-              preload="metadata"
-            ></audio>
           </div>
 
           <!-- 右侧：双语实时滚动歌词与歌曲解析面板 [7 cols] -->
@@ -298,7 +250,7 @@ const toggleShowAll = () => {
                 <span class="text-rose-400">日文原词 / 中文释义</span>
               </div>
 
-              <!-- 滚动歌词容器 -->
+              <!-- 滚动歌词容器（仅在容器内部滚动，绝不锁定页面滚动条） -->
               <div 
                 ref="lyricsContainer"
                 class="h-[340px] overflow-y-auto pr-3 space-y-4 bg-pixel-bg/80 border border-pixel-border p-4 rounded-none select-none scrollbar-thin scrollbar-thumb-slate-700"

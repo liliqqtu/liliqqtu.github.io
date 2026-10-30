@@ -1,13 +1,11 @@
 <script setup>
-import { ref } from 'vue'
 import { sound } from '../utils/audio'
-import { Volume2, VolumeX, Printer, Code2 } from 'lucide-vue-next'
+import { bgm, bgmState } from '../utils/bgmManager'
+import { Volume2, VolumeX, Printer, Music2 } from 'lucide-vue-next'
 
-const isMuted = ref(sound.isMuted())
-
-const toggleSound = () => {
-  sound.toggleMute()
-  isMuted.value = sound.isMuted()
+const toggleBgm = () => {
+  sound.playClick()
+  bgm.toggle()
 }
 
 const printResume = () => {
@@ -48,14 +46,26 @@ const handleNavHover = () => {
 
       <!-- 顶部功能操作区 -->
       <div class="flex items-center gap-3">
-        <!-- 音效开关 -->
+        <!-- 背景音乐 (BGM) 喇叭开关：与《アイスクリームと晴れ空》全局同步 -->
         <button 
-          @click="toggleSound" 
-          :title="isMuted ? '开启 8-bit 复古微音效' : '已开启音效（点击静音）'"
-          class="p-2 border border-pixel-border bg-pixel-card hover:border-pixel-blue text-slate-300 hover:text-white transition-all text-xs flex items-center gap-1.5"
+          @click="toggleBgm" 
+          :title="bgmState.isPlaying ? '点击暂停背景音乐：《アイスクリームと晴れ空》' : '点击播放背景音乐：《アイスクリームと晴れ空》'"
+          class="pixel-btn px-2.5 py-1.5 transition-all text-xs flex items-center gap-2"
+          :class="bgmState.isPlaying 
+            ? 'bg-rose-950/40 border-rose-500 text-rose-300 shadow-pixel-sm' 
+            : 'bg-pixel-card border-pixel-border hover:border-rose-400 text-slate-300 hover:text-white'"
         >
-          <component :is="isMuted ? VolumeX : Volume2" class="w-4 h-4 text-pixel-amber" />
-          <span class="hidden sm:inline font-pixel text-[11px]">{{ isMuted ? 'MUTE' : 'AUDIO' }}</span>
+          <!-- 播放时的音波跳动微动效 -->
+          <span v-if="bgmState.isPlaying" class="flex items-end gap-0.5 h-3">
+            <span class="w-0.5 bg-rose-400 animate-pulse h-3"></span>
+            <span class="w-0.5 bg-rose-400 animate-pulse h-1.5" style="animation-delay: 150ms;"></span>
+            <span class="w-0.5 bg-rose-400 animate-pulse h-2.5" style="animation-delay: 300ms;"></span>
+          </span>
+          <component :is="bgmState.isPlaying ? Volume2 : VolumeX" class="w-4 h-4" :class="bgmState.isPlaying ? 'text-rose-400' : 'text-slate-400'" />
+          
+          <span class="font-pixel text-[11px] tracking-wide">
+            {{ bgmState.isPlaying ? 'BGM: ON' : 'BGM: OFF' }}
+          </span>
         </button>
 
         <!-- 打印/导出求职页面 -->
