@@ -1,13 +1,13 @@
 export const portfolioData = {
   profile: {
-    name: "Lili (明耀寒玥)",
+    name: "xin",
     role: "软硬全栈工程师 · 独立游戏开发者",
     status: "积极求职中 (全栈 / 嵌入式 / 算法 / 游戏开发)",
     avatar: "./images/profile/avatar.png", // 用户放入本地头像后自动生效，未放前通过错误处理 fallback 到像素生成头像
     avatarFallback: "https://api.dicebear.com/7.x/pixel-art/svg?seed=lili_maker&backgroundColor=121722",
     bio: "拥有扎实的数学逻辑与建模底蕴（数学竞赛省二等奖），兼具软硬件贯通研发能力。既能在单片机电路板上焊出稳定通信的硬件终端，也能在云端高效接入大模型与高并发架构，同时热衷于用像素艺术和自研逻辑编写独立的 2D 小游戏。",
-    location: "中国 · 河南 / 远程",
-    email: "contact@lili.dev", // 可后续替换为用户的真实邮箱
+    location: "中国 · 河南 / 郑州",
+    email: "2906616766@qq.com", // 可后续替换为用户的真实邮箱
     github: "https://github.com/liliqqtu",
     gitee: "https://gitee.com/LingYueQingChun"
   },
@@ -81,11 +81,11 @@ export const portfolioData = {
       platform: "Web / 浏览器即开即玩",
       coverColor: "from-emerald-900 to-slate-900",
       image: "./images/games/kirogame.png",
-      repoUrl: "https://github.com/liliqqtu/kirogame",
-      playUrl: "https://github.com/liliqqtu/kirogame",
+      repoUrl: "https://liliqqtu.github.io/kirogame/",
+      playUrl: "https://liliqqtu.github.io/kirogame/",
       isDownload: false,
       desc: "纯前端自研网页像素小游戏，基于 Canvas 与 原生 JavaScript 渲染，复古调色与平滑帧率控制。",
-      controls: "方向键 / WASD 移动 · 空格交互"
+      controls: "方向键 / WASD 移动 · J攻击 K放技能 空格暂停"
     },
     {
       id: "contra-2d",
@@ -95,11 +95,11 @@ export const portfolioData = {
       coverColor: "from-amber-900 to-slate-900",
       image: "./images/games/contra.png",
       repoUrl: null,
-      downloadUrl: "https://github.com/liliqqtu/kirogame/releases", // 建议挂载 Releases
+      downloadUrl: "https://github.com/liliqqtu/liliqqtu_releases/releases/download/v1.0.0/Contra-Pixel-2D-v1.0.zip", // 建议挂载 Releases
       isDownload: true,
       fileSize: "独立打包免安装",
       desc: "经典街机 2D 平台射击玩法重构。自主设计多向弹幕生成、多层碰撞体积判定与关卡敌人 AI 状态机。",
-      controls: "WASD: 八向移动瞄准 | J: 连续射击 | K: 跳跃 | R: 快速重开"
+      controls: "WASD: 八向移动瞄准 | 左键: 连续射击 | 空格: 跳跃"
     },
     {
       id: "pixel-runner",
@@ -109,11 +109,11 @@ export const portfolioData = {
       coverColor: "from-sky-900 to-slate-900",
       image: "./images/games/runner.png",
       repoUrl: null,
-      downloadUrl: "https://github.com/liliqqtu/kirogame/releases",
+      downloadUrl: "https://github.com/liliqqtu/liliqqtu_releases/releases/download/v1.0.0/Pixel-Runner-v1.0.zip",
       isDownload: true,
       fileSize: "独立打包免安装",
       desc: "快节奏像素横版跑酷，强调严苛的物理跳跃手感、陷阱判定机制以及节奏感关卡编排。",
-      controls: "A / D: 左右移动加速 | Space: 跳跃 / 二段跳 | Shift: 瞬间冲刺"
+      controls: "WASD 移动 · Space: 重开"
     }
   ],
 
