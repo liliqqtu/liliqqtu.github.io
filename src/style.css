@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0a0d14;
+    color: #f1f5f9;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+}
+
+/* 像素风格实用类 */
+.pixel-border {
+  border: 2px solid #2a3449;
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 0.85);
+  transition: all 0.15s ease-in-out;
+}
+
+.pixel-border:hover {
+  border-color: #38bdf8;
+  box-shadow: 6px 6px 0px 0px rgba(56, 189, 248, 0.4);
+  transform: translate(-2px, -2px);
+}
+
+.pixel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid currentColor;
+  box-shadow: 3px 3px 0px 0px currentColor;
+  transition: all 0.1s ease-in-out;
+  cursor: pointer;
+}
+
+.pixel-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px currentColor;
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px 0px currentColor;
+}
+
+/* 像素网格背景微纹理 */
+.bg-pixel-grid {
+  background-size: 24px 24px;
+  background-image: 
+    linear-gradient(to right, rgba(42, 52, 73, 0.18) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(42, 52, 73, 0.18) 1px, transparent 1px);
+}
+
+/* 打印/简历导出模式优化 */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-clean {
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    color: black !important;
+    background: transparent !important;
+  }
+}
