@@ -3,7 +3,8 @@ export const portfolioData = {
     name: "Lili (明耀寒玥)",
     role: "软硬全栈工程师 · 独立游戏开发者",
     status: "积极求职中 (全栈 / 嵌入式 / 算法 / 游戏开发)",
-    avatar: "https://api.dicebear.com/7.x/pixel-art/svg?seed=lili_maker&backgroundColor=121722",
+    avatar: "./images/profile/avatar.png", // 用户放入本地头像后自动生效，未放前通过错误处理 fallback 到像素生成头像
+    avatarFallback: "https://api.dicebear.com/7.x/pixel-art/svg?seed=lili_maker&backgroundColor=121722",
     bio: "拥有扎实的数学逻辑与建模底蕴（数学竞赛省二等奖），兼具软硬件贯通研发能力。既能在单片机电路板上焊出稳定通信的硬件终端，也能在云端高效接入大模型与高并发架构，同时热衷于用像素艺术和自研逻辑编写独立的 2D 小游戏。",
     location: "中国 · 河南 / 远程",
     email: "contact@lili.dev", // 可后续替换为用户的真实邮箱
@@ -42,6 +43,7 @@ export const portfolioData = {
       repoStatus: "团队协同仓库 (Gitee 权限受限 · 本地备份)",
       repoUrl: "https://gitee.com/LingYueQingChun",
       localFolder: "E:\\项目\\xlzp",
+      image: "./images/projects/campus-run.png",
       summary: "面向高校跑步打卡与运动健康的综合服务系统，结合移动端、管理后台与大语言模型。",
       responsibilities: [
         "**大模型智能体接入**：完成 LLM 接口全链路对接，设计结构化 Prompt 模版与流式响应（SSE），为学生生成定制配速与运动指导；",
@@ -59,6 +61,7 @@ export const portfolioData = {
       repoStatus: "开源项目 (个人独立主导硬件)",
       repoUrl: "https://github.com/liliqqtu/jiayouhuawei",
       localFolder: null,
+      image: "./images/projects/elderly-system.png",
       summary: "解决独居老人生命体征监测与跌倒紧急救助的软硬件一体化综合解决方案。",
       responsibilities: [
         "**全部硬件设计与研制**：自主完成传感器模块选型、电路板连线与原型焊接，集成姿态跌倒检测与生命体征感应模组；",
@@ -77,6 +80,7 @@ export const portfolioData = {
       type: "Web 原生像素游戏",
       platform: "Web / 浏览器即开即玩",
       coverColor: "from-emerald-900 to-slate-900",
+      image: "./images/games/kirogame.png",
       repoUrl: "https://github.com/liliqqtu/kirogame",
       playUrl: "https://github.com/liliqqtu/kirogame",
       isDownload: false,
@@ -89,6 +93,7 @@ export const portfolioData = {
       type: "独立客户端游戏 (.exe)",
       platform: "Windows PC",
       coverColor: "from-amber-900 to-slate-900",
+      image: "./images/games/contra.png",
       repoUrl: null,
       downloadUrl: "https://github.com/liliqqtu/kirogame/releases", // 建议挂载 Releases
       isDownload: true,
@@ -102,6 +107,7 @@ export const portfolioData = {
       type: "独立客户端游戏 (.exe)",
       platform: "Windows PC",
       coverColor: "from-sky-900 to-slate-900",
+      image: "./images/games/runner.png",
       repoUrl: null,
       downloadUrl: "https://github.com/liliqqtu/kirogame/releases",
       isDownload: true,
@@ -116,12 +122,14 @@ export const portfolioData = {
     {
       id: "infrared-car",
       title: "多路红外循迹智能小车",
+      image: "./images/hardware/car.png",
       tags: ["红外反射阵列", "电机驱动", "差速转向 PID", "硬件电路"],
       desc: "通过底部多路高灵敏度红外收发对管实时判别黑线边界，通过单片机定时器与 PWM 差速调校，实现平稳应对直角弯、十字路口与虚线轨迹。"
     },
     {
       id: "elderly-device",
       title: "智慧养老随身硬件终端",
+      image: "./images/hardware/elderly-device.png",
       tags: ["姿态传感器", "单片机开发", "串口/蓝牙", "低功耗电源"],
       desc: "智慧养老项目的物理硬件核心。集成微型姿态传感器与应急按键，支持软硬件互联数据报文的快速上传与指示灯状态回馈。"
     }

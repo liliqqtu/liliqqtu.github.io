@@ -85,16 +85,31 @@ defineProps({
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 pt-2">
             
             <!-- 概述 -->
-            <div class="lg:col-span-1 space-y-3 bg-pixel-bg/60 p-4 border border-pixel-border">
-              <div class="flex items-center gap-2 text-xs font-bold text-slate-300">
-                <Layers class="w-4 h-4 text-pixel-blue" />
-                <span>系统背景与目标</span>
+            <div class="lg:col-span-1 space-y-3 bg-pixel-bg/60 p-4 border border-pixel-border flex flex-col justify-between">
+              <div class="space-y-3">
+                <div class="flex items-center gap-2 text-xs font-bold text-slate-300">
+                  <Layers class="w-4 h-4 text-pixel-blue" />
+                  <span>系统背景与目标</span>
+                </div>
+                <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+                  {{ project.summary }}
+                </p>
+
+                <!-- 项目实机截图/架构图预览 (若存在) -->
+                <div v-if="project.image" class="overflow-hidden border border-slate-700 bg-black/60 relative group/pimg">
+                  <img 
+                    :src="project.image" 
+                    :alt="project.title"
+                    class="w-full h-36 object-cover group-hover/pimg:scale-105 transition-transform duration-300"
+                    @error="(e) => e.target.parentElement.style.display = 'none'"
+                  />
+                  <span class="absolute bottom-1 right-1 bg-black/85 font-pixel text-[8px] text-pixel-blue px-1.5 py-0.5 border border-pixel-blue/40">
+                    REAL SCREENSHOT
+                  </span>
+                </div>
               </div>
-              <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
-                {{ project.summary }}
-              </p>
               
-              <div class="pt-2 border-t border-slate-800">
+              <div class="pt-2 border-t border-slate-800 mt-2">
                 <div class="text-[11px] text-slate-400 font-pixel mb-1">KEY HIGHLIGHT:</div>
                 <div class="text-xs text-pixel-greenLight font-medium">
                   ✦ {{ project.highlights }}

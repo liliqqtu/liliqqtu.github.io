@@ -165,7 +165,12 @@ const copyEmail = () => {
           
           <div class="flex justify-center mb-4">
             <div class="relative w-28 h-28 border-2 border-pixel-green bg-pixel-bg p-1 shadow-pixel-sm">
-              <img :src="profile.avatar" alt="Pixel Avatar" class="w-full h-full object-cover rendering-pixelated" />
+              <img 
+                :src="profile.avatar" 
+                @error="(e) => e.target.src = profile.avatarFallback"
+                alt="Avatar" 
+                class="w-full h-full object-cover rendering-pixelated" 
+              />
               <div class="absolute -bottom-2 -right-2 bg-pixel-green text-black font-pixel text-[9px] px-1 py-0.5 border border-black">
                 FULL
               </div>

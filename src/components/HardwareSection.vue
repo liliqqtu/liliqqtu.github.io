@@ -61,6 +61,19 @@ defineProps({
               <p class="text-xs md:text-sm text-slate-300 leading-relaxed bg-pixel-bg/60 p-3 border border-pixel-border">
                 {{ item.desc }}
               </p>
+
+              <!-- 硬件实物照片展示 (自动适配与优雅降级) -->
+              <div v-if="item.image" class="mt-3 overflow-hidden border-2 border-pixel-border bg-black/60 shadow-pixel-sm group/img relative">
+                <img 
+                  :src="item.image" 
+                  :alt="item.title"
+                  class="w-full h-44 object-cover group-hover/img:scale-105 transition-transform duration-300"
+                  @error="(e) => e.target.parentElement.style.display = 'none'"
+                />
+                <span class="absolute bottom-2 right-2 bg-black/80 font-pixel text-[9px] text-pixel-purple px-2 py-0.5 border border-pixel-purple/50">
+                  HARDWARE PHOTO
+                </span>
+              </div>
             </div>
           </div>
         </div>

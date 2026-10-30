@@ -50,15 +50,24 @@ const closeModal = () => {
           @mouseenter="sound.playHover()"
         >
           <div>
-            <!-- 游戏顶部封面色块 / 虚拟街机头 -->
-            <div :class="['h-28 p-4 flex flex-col justify-between bg-gradient-to-br', game.coverColor, 'border-b-2 border-pixel-border relative']">
-              <div class="flex items-center justify-between">
-                <span class="font-pixel text-[10px] px-2 py-0.5 bg-black/60 border border-white/20 text-white">
+            <!-- 游戏顶部封面色块 / 虚拟街机头 (支持本地图片与优雅降级) -->
+            <div :class="['h-36 p-4 flex flex-col justify-between bg-gradient-to-br', game.coverColor, 'border-b-2 border-pixel-border relative overflow-hidden group/cover']">
+              <img 
+                v-if="game.image" 
+                :src="game.image" 
+                :alt="game.title"
+                class="absolute inset-0 w-full h-full object-cover opacity-60 group-hover/cover:opacity-85 group-hover/cover:scale-105 transition-all duration-300"
+                @error="(e) => e.target.style.display = 'none'"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent"></div>
+
+              <div class="flex items-center justify-between relative z-10">
+                <span class="font-pixel text-[10px] px-2 py-0.5 bg-black/70 border border-white/20 text-white shadow-sm">
                   {{ game.platform }}
                 </span>
-                <span class="font-pixel text-[10px] text-pixel-amber">INSERT COIN</span>
+                <span class="font-pixel text-[10px] text-pixel-amber drop-shadow">INSERT COIN</span>
               </div>
-              <h3 class="font-pixel text-base text-white drop-shadow-md">
+              <h3 class="font-pixel text-base text-white drop-shadow-md relative z-10">
                 {{ game.title }}
               </h3>
             </div>
