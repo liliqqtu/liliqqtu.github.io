@@ -114,6 +114,22 @@ export const portfolioData = {
       fileSize: "独立打包免安装",
       desc: "快节奏像素横版跑酷，强调严苛的物理跳跃手感、陷阱判定机制以及节奏感关卡编排。",
       controls: "WASD 移动 · Space: 重开"
+    },
+    {
+      id: "tactical-rpg",
+      title: "战棋策略 RPG 原型",
+      type: "重度策略系统 (Godot 引擎)",
+      platform: "Godot / GDScript",
+      coverColor: "from-purple-950 to-slate-900",
+      image: "./images/games/tactical-rpg.png",
+      repoUrl: null,
+      downloadUrl: null,
+      isDownload: false,
+      isWip: true, // 研发中标识
+      wipBadge: "🚧 深度架构研发中",
+      fileSize: "系统原型阶段",
+      desc: "致敬经典《火焰纹章》的网格战棋游戏。攻关 A* 网格寻路与地形阻挡、基于有限状态机（FSM）的严密回合行动流，以及职业数值与武器相克系统。",
+      controls: "架构亮点：网格坐标系 · A*寻路 · 回合状态机 · 数值推演"
     }
   ],
 
@@ -135,11 +151,34 @@ export const portfolioData = {
     }
   ],
 
+  // 🎵 数字创意与 AI 音频工坊 (AI Audio & NetEase)
+  music: {
+    artistName: "明耀寒玥",
+    artistNeteaseUrl: "https://music.163.com", // 用户可替换为具体网易云音乐人主页链接
+    description: "探索 Generative AI 在游戏音频与数字音乐中的编曲实践。结合提示词工程与音乐生成工作流，创作具备动漫与游戏叙事感的原创音乐。",
+    songs: [
+      {
+        id: "ice-cream-sunny-sky",
+        title: "アイスクリームと晴れ空",
+        titleCn: "冰淇淋与晴空",
+        style: "日系 / 动漫 / 游戏原声 (J-Pop / Anime OST)",
+        duration: "03:24",
+        isAiGenerated: true,
+        platform: "网易云音乐已正式发行",
+        neteaseUrl: "https://music.163.com", // 用户粘贴网易云歌曲链接
+        audioSrc: "./audio/ice_cream.mp3", // 本地音频文件路径（可选放入 public/audio/）
+        cover: "./images/music/ice_cream.png", // 专辑封面（可选）
+        desc: "充满明媚夏日感与元气氛围的日系动漫游戏风格音乐。以清脆灵动的旋律刻画晴空下的青春与活力。"
+      }
+      // 未来新增歌曲直接在此追加即可，组件会自动支持前3首展示+展开更多
+    ]
+  },
+
   // 🛠️ 技能树矩阵
   skills: [
     {
       category: "编程语言 & 算法底蕴",
-      items: ["Java", "C / C++", "C#", "Python", "JavaScript / ES6+", "数学建模与逻辑推演"]
+      items: ["Java", "C / C++", "C#", "Python", "GDScript", "JavaScript / ES6+", "数学建模与逻辑推演"]
     },
     {
       category: "后端架构 & 大模型落地",
@@ -147,7 +186,7 @@ export const portfolioData = {
     },
     {
       category: "前端交互 & 游戏开发",
-      items: ["Vue 3", "UniApp (微信小程序)", "HTML5 Canvas", "Tailwind CSS", "2D游戏物理与状态机", "Aseprite 像素绘制"]
+      items: ["Godot Engine", "Vue 3", "UniApp (微信小程序)", "HTML5 Canvas", "2D游戏物理与状态机", "Aseprite 像素绘制"]
     },
     {
       category: "嵌入式硬件 & 物联网",

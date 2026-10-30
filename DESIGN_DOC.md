@@ -28,11 +28,12 @@
 flowchart TD
     A[Navbar 导航与状态栏] --> B[Hero 英雄区：身份标签 + 动态像素名片]
     B --> C[Awards 成就殿堂：数学竞赛 / 计算机设计大赛徽章]
-    C --> D[Games 像素工坊：在线试玩 / EXE下载 / GitHub源码]
-    D --> E[Projects 重点工程：校园跑AI + 智慧养老系统]
+    C --> D[Projects 重点工程：校园跑AI + 智慧养老系统]
+    D --> E[Games 像素工坊：可玩游戏 + ★Godot火纹战棋研发中]
     E --> F[Hardware 创客硬件馆：红外循迹车 + 物联网嵌入式]
-    F --> G[Skills 全栈技能树：按领域分类的技术能力雷达]
-    G --> H[Footer & Contact 信号发射站：GitHub / Gitee / 邮箱]
+    F --> G[Music 像素音乐机：AI音乐作品 + 网易云单曲试听]
+    G --> H[Skills 全栈技能树：按领域分类的技术能力雷达]
+    H --> I[Footer & Contact 信号发射站：GitHub / Gitee / 邮箱]
 ```
 
 ### 1. Header & Navigation (顶栏)
@@ -76,6 +77,14 @@ flowchart TD
    * **标签**：`Windows` / `Platformer Runner` / `Executable`
    * **简介**：快节奏跳跃与障碍闪避机制，关卡地图设计与手感调优。
    * **交互按钮**：`[⬇️ 下载客户端 (EXE)]` · `[🎥 玩法预览 GIF/视频]`。
+4. **【深度架构 · 研发中】战棋策略 RPG 原型 (Tactical Grid RPG - Fire Emblem Like)**
+   * **引擎与语言**：`Godot Engine` / `GDScript`
+   * **标签**：`Godot` / `Tactical RPG` / `In Development (WIP)`
+   * **技术亮点**：
+     * **A* 网格寻路**：棋盘格移动范围判别、地形消耗阻挡与视线判定；
+     * **有限状态机 (FSM)**：严密管理玩家回合、敌方 AI 决策与战斗结算；
+     * **属性相克与数值体系**：武器三角克制、命中/必杀概率公式与成长矩阵。
+   * **求职价值**：证明具备从零驾驭高复杂度重度系统逻辑与开源商业引擎（Godot）的硬核开发能力。
 
 ### 5. 核心工程项目 (Featured Projects)
 展示工业级/落地级软件系统，突出团队合作与解决复杂问题的能力：
@@ -102,9 +111,18 @@ flowchart TD
 * **智慧养老硬件模块原型**：
   * 传感器阵列集成、低功耗电源管理、状态机指示灯。
 
-### 7. 技术技能矩阵 (Skills & Tools)
+### 7. 数字创意与 AI 音频工坊 (AI Audio & Creative)
+展示跨界 AIGC 探索与审美落地能力（已上架网易云音乐）：
+* **交互形态**：复古像素磁带播放器（Retro Pixel Cassette），支持内嵌音频试听与网易云官方跳转。
+* **首发单曲**：《アイスクリームと晴れ空》
+  * **风格**：日系动漫 / 游戏原声 (J-Pop / Anime OST)
+  * **创作方式**：基于 Generative AI 提示词编曲与调优，呈现明亮夏日与游戏元气氛围；
+  * **入口**：`[☁️ 网易云音乐在线试听]` + `[网易云音乐人主页（可选）]`；
+* **可拓展设计**：默认展示当前精选单曲，预留 `[展开更多歌曲 ▾]` 折叠逻辑，随着未来歌曲增加无缝扩展。
+
+### 8. 技术技能矩阵 (Skills & Tools)
 分类像素标签芯片：
-* **游戏 & 引擎**：C#, Unity / 自研 2D 引擎, Aseprite (像素绘制), 碰撞检测, 状态机设计
+* **游戏 & 引擎**：Godot Engine (GDScript), C#, Unity / 自研 2D 引擎, Aseprite (像素绘制), 碰撞检测, 状态机设计
 * **后端 & AI**：Java, Spring Boot, Python, LLM API (Prompt Engineering / Fine-Tuning)
 * **前端 & 移动端**：HTML5 / Canvas, Vue / UniApp, JavaScript / TypeScript, Tailwind CSS
 * **硬件 & 嵌入式**：STM32 / 51单片机, 传感器模块集成, 串口/网络通信, 电路焊接与调试

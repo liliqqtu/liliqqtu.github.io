@@ -65,7 +65,10 @@ const closeModal = () => {
                 <span class="font-pixel text-[10px] px-2 py-0.5 bg-black/70 border border-white/20 text-white shadow-sm">
                   {{ game.platform }}
                 </span>
-                <span class="font-pixel text-[10px] text-pixel-amber drop-shadow">INSERT COIN</span>
+                <span v-if="game.isWip" class="font-pixel text-[10px] text-pixel-purple bg-purple-950/80 px-2 py-0.5 border border-purple-500/50">
+                  {{ game.wipBadge || 'IN DEV' }}
+                </span>
+                <span v-else class="font-pixel text-[10px] text-pixel-amber drop-shadow">INSERT COIN</span>
               </div>
               <h3 class="font-pixel text-base text-white drop-shadow-md relative z-10">
                 {{ game.title }}
@@ -74,8 +77,8 @@ const closeModal = () => {
 
             <!-- 内容区 -->
             <div class="p-5 space-y-3">
-              <div class="text-xs font-semibold text-pixel-green flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 bg-pixel-green rounded-full"></span>
+              <div class="text-xs font-semibold flex items-center gap-1.5" :class="game.isWip ? 'text-pixel-purple' : 'text-pixel-green'">
+                <span class="w-1.5 h-1.5 rounded-full" :class="game.isWip ? 'bg-pixel-purple animate-pulse' : 'bg-pixel-green'"></span>
                 <span>{{ game.type }}</span>
               </div>
 
@@ -83,19 +86,29 @@ const closeModal = () => {
                 {{ game.desc }}
               </p>
 
-              <!-- 键位提示 -->
+              <!-- 键位/架构提示 -->
               <div class="text-[11px] text-slate-400 font-mono bg-pixel-bg p-2 border border-pixel-border">
-                <span class="text-pixel-amber">按键:</span> {{ game.controls }}
+                <span :class="game.isWip ? 'text-pixel-purple' : 'text-pixel-amber'">{{ game.isWip ? '架构:' : '按键:' }}</span> {{ game.controls }}
               </div>
             </div>
           </div>
 
           <!-- 操作按钮栏 -->
           <div class="p-5 pt-0 flex items-center gap-2">
+            <!-- 研发中游戏 -->
+            <template v-if="game.isWip">
+              <button 
+                @click="openGameModal(game)"
+                class="w-full pixel-btn py-2 bg-pixel-card text-pixel-purple border-pixel-purple hover:bg-purple-950/40 text-xs font-bold gap-1.5"
+              >
+                <span>查看架构亮点与开发进度</span>
+              </button>
+            </template>
+
             <!-- 网页版直接试玩 / 仓库 -->
-            <template v-if="!game.isDownload">
+            <template v-else-if="!game.isDownload">
               <a 
-                :href="game.repoUrl" 
+                :href="game.playUrl || game.repoUrl" 
                 target="_blank"
                 class="flex-1 pixel-btn py-2 bg-pixel-green text-black border-pixel-green text-xs font-bold gap-1.5"
                 @click="sound.playCoin()"

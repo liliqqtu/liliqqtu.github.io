@@ -60,6 +60,9 @@ e:\Dream\self_page\public\images\
   3. **Kirogame (网页像素小游戏)**：
      * 文件名建议：`kirogame.png`
      * **建议**：打开浏览器截取 Kirogame 的游戏主界面。
+  4. **战棋策略 RPG 原型 (Godot 研发中)**：
+     * 文件名建议：`tactical-rpg.png`
+     * **建议**：截取 1 张 Godot 编辑器界面、网格棋盘调试图或角色站位画面（若暂无，会自动以专属像素紫色街机卡片优雅展示）。
 
 ---
 
@@ -72,6 +75,18 @@ e:\Dream\self_page\public\images\
   2. **智慧养老随身硬件终端**：
      * 文件名建议：`elderly-device.png`
      * **建议**：单片机主板、姿态传感器模组与杜邦线/焊板特写。
+
+---
+
+### 5. 数字创意与 AI 音频 (Music)
+* **单曲试听音频**（可选本地放置）：
+  * 存放路径：`public/audio/ice_cream.mp3`（放好后，网页上的像素磁带机可以直接点击试听旋转齿轮播放！）
+* **封面图**（可选）：
+  * 存放路径：`public/images/music/ice_cream.png`
+* **网易云外部链接配置**：
+  * 打开 `src/data/portfolioData.js` 的 `music` 配置块；
+  * 将 `neteaseUrl` 改为你歌曲在网易云音乐的真实链接；
+  * （可选）将 `artistNeteaseUrl` 改为你的网易云音乐人主页链接。
 
 ---
 

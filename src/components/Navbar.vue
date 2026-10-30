@@ -40,8 +40,9 @@ const handleNavHover = () => {
       <nav class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
         <a href="#awards" class="hover:text-pixel-amber transition-colors" @mouseenter="handleNavHover">🏆 荣誉</a>
         <a href="#projects" class="hover:text-pixel-blue transition-colors" @mouseenter="handleNavHover">💼 核心工程</a>
-        <a href="#games" class="hover:text-pixel-green transition-colors" @mouseenter="handleNavHover">🎮 独立小游戏</a>
-        <a href="#hardware" class="hover:text-pixel-purple transition-colors" @mouseenter="handleNavHover">🔬 创客硬件</a>
+        <a href="#games" class="hover:text-pixel-green transition-colors" @mouseenter="handleNavHover">🎮 游戏</a>
+        <a href="#hardware" class="hover:text-pixel-purple transition-colors" @mouseenter="handleNavHover">🔬 创客</a>
+        <a href="#music" class="hover:text-rose-400 transition-colors" @mouseenter="handleNavHover">🎵 音乐</a>
         <a href="#skills" class="hover:text-slate-100 transition-colors" @mouseenter="handleNavHover">🛠️ 技能树</a>
       </nav>
 

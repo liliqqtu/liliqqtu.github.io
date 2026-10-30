@@ -6,6 +6,7 @@ import AwardSection from './components/AwardSection.vue'
 import ProjectSection from './components/ProjectSection.vue'
 import GameSection from './components/GameSection.vue'
 import HardwareSection from './components/HardwareSection.vue'
+import MusicSection from './components/MusicSection.vue'
 import SkillSection from './components/SkillSection.vue'
 import FooterSection from './components/FooterSection.vue'
 </script>
@@ -20,6 +21,7 @@ import FooterSection from './components/FooterSection.vue'
       <ProjectSection :projects="portfolioData.projects" />
       <GameSection :games="portfolioData.games" />
       <HardwareSection :hardware="portfolioData.hardware" />
+      <MusicSection :music="portfolioData.music" />
       <SkillSection :skills="portfolioData.skills" />
     </main>
 
