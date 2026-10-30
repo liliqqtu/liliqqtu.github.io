@@ -112,8 +112,19 @@ const handleClose = () => {
           <span>前往 GitHub Releases 下载 (.exe)</span>
         </a>
 
+        <a 
+          v-if="game.isWip && game.repoUrl"
+          :href="game.repoUrl"
+          target="_blank"
+          class="pixel-btn px-5 py-2 bg-pixel-purple text-white border-pixel-purple text-xs font-bold gap-1.5"
+          @click="sound.playCoin()"
+        >
+          <ExternalLink class="w-4 h-4" />
+          <span>访问 GitHub 源码 (Lost)</span>
+        </a>
+
         <button 
-          v-else
+          v-else-if="game.isWip"
           @click="handleClose"
           class="pixel-btn px-5 py-2 bg-pixel-purple text-white border-pixel-purple text-xs font-bold gap-1.5"
         >

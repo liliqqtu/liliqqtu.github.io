@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <!-- 背景：夏日晴空渐变 -->
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="60%" stop-color="#7dd3fc"/>
+      <stop offset="100%" stop-color="#fed7aa"/>
+    </linearGradient>
+    <pattern id="pixelGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+      <rect width="10" height="10" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="400" height="400" fill="url(#skyGrad)"/>
+  <rect width="400" height="400" fill="url(#pixelGrid)"/>
+
+  <!-- 像素太阳与阳光耀斑 -->
+  <rect x="310" y="30" width="50" height="50" fill="#fef08a"/>
+  <rect x="300" y="40" width="70" height="30" fill="#fde047"/>
+  <rect x="320" y="20" width="30" height="70" fill="#fde047"/>
+  <rect x="315" y="35" width="40" height="40" fill="#ffffff"/>
+
+  <!-- 像素云朵 1 -->
+  <g fill="#ffffff" opacity="0.95">
+    <rect x="40" y="70" width="110" height="30" rx="0"/>
+    <rect x="60" y="50" width="70" height="30" rx="0"/>
+    <rect x="80" y="35" width="35" height="20" rx="0"/>
+  </g>
+
+  <!-- 像素云朵 2 -->
+  <g fill="#ffffff" opacity="0.9">
+    <rect x="230" y="110" width="120" height="26" rx="0"/>
+    <rect x="260" y="94" width="70" height="26" rx="0"/>
+  </g>
+
+  <!-- 核心主体：像素草莓香草双色甜筒冰淇淋 -->
+  <g transform="translate(145, 120)">
+    <!-- 顶层草莓冰球 -->
+    <rect x="25" y="20" width="60" height="45" fill="#fb7185"/>
+    <rect x="35" y="10" width="40" height="20" fill="#fda4af"/>
+    <rect x="45" y="5" width="20" height="10" fill="#ffffff"/>
+    <!-- 樱桃/草莓装饰 -->
+    <rect x="48" y="-5" width="14" height="14" fill="#e11d48"/>
+    <rect x="52" y="-12" width="4" height="10" fill="#15803d"/>
+
+    <!-- 中层香草柠檬冰球 -->
+    <rect x="15" y="55" width="80" height="45" fill="#fef08a"/>
+    <rect x="20" y="50" width="70" height="20" fill="#fef9c3"/>
+    <rect x="25" y="65" width="10" height="15" fill="#fde047"/>
+    <rect x="75" y="65" width="10" height="15" fill="#fde047"/>
+
+    <!-- 冰淇淋滴落细节 (Melting Ice Cream) -->
+    <rect x="20" y="95" width="12" height="18" fill="#fef08a"/>
+    <rect x="78" y="95" width="10" height="24" fill="#fef08a"/>
+
+    <!-- 威化甜筒 (Waffle Cone) -->
+    <polygon points="15,95 95,95 55,210" fill="#d97706"/>
+    <polygon points="20,100 90,100 55,200" fill="#f59e0b"/>
+    <!-- 甜筒网格线条 -->
+    <line x1="28" y1="100" x2="68" y2="175" stroke="#b45309" stroke-width="3"/>
+    <line x1="48" y1="100" x2="60" y2="195" stroke="#b45309" stroke-width="3"/>
+    <line x1="82" y1="100" x2="42" y2="175" stroke="#b45309" stroke-width="3"/>
+    <line x1="62" y1="100" x2="50" y2="195" stroke="#b45309" stroke-width="3"/>
+  </g>
+
+  <!-- 闪烁像素星光点缀 -->
+  <rect x="110" y="160" width="8" height="8" fill="#ffffff"/>
+  <rect x="280" y="180" width="8" height="8" fill="#ffffff"/>
+  <rect x="130" y="270" width="6" height="6" fill="#fef08a"/>
+  <rect x="260" y="280" width="8" height="8" fill="#ffffff"/>
+
+  <!-- 底部像素文字横幅 -->
+  <rect x="0" y="315" width="400" height="85" fill="#0c101c" opacity="0.92"/>
+  <line x1="0" y1="315" x2="400" y2="315" stroke="#fb7185" stroke-width="4"/>
+  
+  <text x="200" y="352" text-anchor="middle" fill="#ffffff" font-family="'Silkscreen', 'PingFang SC', sans-serif" font-size="18" font-weight="bold" letter-spacing="2">
+    アイスクリームと晴れ空
+  </text>
+  <text x="200" y="380" text-anchor="middle" fill="#38bdf8" font-family="'Silkscreen', monospace" font-size="11" letter-spacing="3">
+    OFFICIAL NETEASE SINGLE · 2026
+  </text>
+</svg>

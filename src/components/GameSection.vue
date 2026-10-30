@@ -99,10 +99,22 @@ const closeModal = () => {
             <template v-if="game.isWip">
               <button 
                 @click="openGameModal(game)"
-                class="w-full pixel-btn py-2 bg-pixel-card text-pixel-purple border-pixel-purple hover:bg-purple-950/40 text-xs font-bold gap-1.5"
+                class="flex-1 pixel-btn py-2 bg-pixel-card text-pixel-purple border-pixel-purple hover:bg-purple-950/40 text-xs font-bold gap-1.5"
               >
-                <span>查看架构亮点与开发进度</span>
+                <span>架构亮点与说明</span>
               </button>
+
+              <a 
+                v-if="game.repoUrl"
+                :href="game.repoUrl" 
+                target="_blank"
+                class="pixel-btn px-3 py-2 bg-purple-950/40 border-pixel-purple text-purple-200 hover:text-white text-xs font-bold gap-1.5"
+                title="查看 GitHub 仓库 (Lost)"
+                @click="sound.playCoin()"
+              >
+                <Github class="w-3.5 h-3.5" />
+                <span>开源仓库</span>
+              </a>
             </template>
 
             <!-- 网页版直接试玩 / 仓库 -->

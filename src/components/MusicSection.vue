@@ -1,7 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { sound } from '../utils/audio'
-import { Music, Play, Pause, ExternalLink, Disc, Sparkles, ChevronDown, ChevronUp, Radio } from 'lucide-vue-next'
+import { lyricsData } from '../data/lyrics'
+import { 
+  Music, Play, Pause, ExternalLink, Disc, Sparkles, 
+  ChevronDown, ChevronUp, Radio, Volume2, Clock, 
+  FileText, ListMusic, UserCheck
+} from 'lucide-vue-next'
 
 const props = defineProps({
   music: {
@@ -13,9 +18,79 @@ const props = defineProps({
 const isPlaying = ref(false)
 const audioElement = ref(null)
 const currentSong = ref(props.music.songs[0] || null)
-const audioAvailable = ref(true)
+const currentTime = ref(0)
+const duration = ref(204) // 默认 3分24秒 (204秒)
+const lyricsContainer = ref(null)
+const activeTab = ref('lyrics') // 'lyrics' | 'info'
 const showAll = ref(false)
 
+// 格式化时间 00:00
+const formatTime = (secs) => {
+  if (isNaN(secs) || secs < 0) return '00:00'
+  const m = Math.floor(secs / 60).toString().padStart(2, '0')
+  const s = Math.floor(secs % 60).toString().padStart(2, '0')
+  return `${m}:${s}`
+}
+
+// 当前播放歌词的高亮行索引
+const currentLyricIndex = computed(() => {
+  const t = currentTime.value
+  let idx = 0
+  for (let i = 0; i < lyricsData.length; i++) {
+    if (t >= lyricsData[i].time) {
+      idx = i
+    } else {
+      break
+    }
+  }
+  return idx
+})
+
+// 音频进度监听
+const onTimeUpdate = () => {
+  if (audioElement.value) {
+    currentTime.value = audioElement.value.currentTime
+    if (audioElement.value.duration && !isNaN(audioElement.value.duration)) {
+      duration.value = audioElement.value.duration
+    }
+
+    // 歌词自动平滑居中滚动
+    if (lyricsContainer.value) {
+      const activeEl = lyricsContainer.value.querySelector('.active-lyric')
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+  }
+}
+
+const onAudioLoaded = () => {
+  if (audioElement.value && audioElement.value.duration) {
+    duration.value = audioElement.value.duration
+  }
+}
+
+// 点击歌词跳转播放
+const seekLyric = (time) => {
+  if (audioElement.value) {
+    sound.playClick()
+    audioElement.value.currentTime = time
+    if (!isPlaying.value) {
+      togglePlay()
+    }
+  }
+}
+
+// 进度条拖拽/点击
+const onSeekSlider = (e) => {
+  const targetTime = parseFloat(e.target.value)
+  if (audioElement.value) {
+    audioElement.value.currentTime = targetTime
+    currentTime.value = targetTime
+  }
+}
+
+// 播放/暂停
 const togglePlay = () => {
   if (!audioElement.value) return
   
@@ -27,15 +102,17 @@ const togglePlay = () => {
     audioElement.value.play().then(() => {
       isPlaying.value = true
     }).catch(() => {
-      // 若本地还未放入 .mp3 文件，优雅降级提示，引导去网易云
-      audioAvailable.value = false
-      alert('本地暂未放入 MP3 文件（可将音频放入 public/audio/ice_cream.mp3），建议直接点击右侧按钮前往网易云音乐在线收听！')
+      // 若本地未放入音频，提供友好弹窗并可直接打开网易云
+      if (confirm('本地尚未放入音频文件（可将 MP3 放入 public/audio/ice_cream.mp3 开启内嵌播放）。是否立即前往网易云音乐在线试听原曲？')) {
+        window.open(currentSong.value.neteaseUrl, '_blank')
+      }
     })
   }
 }
 
 const onAudioEnded = () => {
   isPlaying.value = false
+  currentTime.value = 0
 }
 
 const toggleShowAll = () => {
@@ -53,151 +130,234 @@ const toggleShowAll = () => {
         <div>
           <div class="flex items-center gap-2 text-rose-400 font-pixel text-xs tracking-wider mb-1">
             <Music class="w-4 h-4" />
-            <span>AIGC & CREATIVE SOUND LAB</span>
+            <span>AIGC SOUNDTRACK & CREATIVE LAB</span>
           </div>
           <h2 class="text-2xl md:text-3xl font-bold text-white tracking-tight">数字创意与 AI 音乐 (网易云音乐人)</h2>
         </div>
         <p class="text-xs text-slate-400 max-w-sm">
-          探索生成式 AI 与提示词编曲实践，创作日系动漫与游戏叙事风格的音乐作品。
+          探索生成式 AI 提示词编曲实践，已在网易云音乐正式发行上线。
         </p>
       </div>
 
-      <!-- 核心展示卡片：像素磁带播放器 (Pixel Cassette Player) -->
+      <!-- 核心播放器主体卡片 -->
       <div class="pixel-border bg-pixel-card p-6 md:p-8 relative overflow-hidden group">
         
-        <div class="flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          <!-- 左侧：8-bit 随身听/磁带机拟物卡片 -->
-          <div class="w-full lg:w-96 bg-pixel-bg border-2 border-pixel-border p-4 shadow-pixel relative">
-            <div class="flex items-center justify-between pb-2 mb-3 border-b border-pixel-border text-[10px] font-pixel text-slate-400">
-              <span class="flex items-center gap-1.5 text-rose-400">
-                <Radio class="w-3.5 h-3.5 animate-pulse" />
-                <span>CASSETTE TAPE</span>
-              </span>
-              <span class="text-pixel-amber">STEREO AIGC</span>
-            </div>
+          <!-- 左侧：唱片/专辑封面展示 (Vinyl & Album Jacket) [4 cols] -->
+          <div class="lg:col-span-5 flex flex-col items-center">
+            
+            <!-- 唱片机外壳与黑胶唱片联动效果 -->
+            <div class="relative w-full max-w-[320px] aspect-square bg-[#0b0e14] border-2 border-pixel-border p-3 shadow-pixel flex items-center justify-center group/cover">
+              
+              <!-- 专辑封面大图 (支持 PNG 覆盖与 SVG 默认降级) -->
+              <div class="relative w-full h-full border border-slate-700 overflow-hidden shadow-inner bg-slate-900">
+                <img 
+                  :src="currentSong?.cover || './images/music/ice_cream.png'" 
+                  @error="(e) => e.target.src = './images/music/ice_cream.svg'"
+                  alt="Album Cover"
+                  class="w-full h-full object-cover transition-transform duration-500"
+                  :class="{ 'scale-105': isPlaying }"
+                />
 
-            <!-- 磁带视窗与齿轮旋转动效 -->
-            <div class="h-28 bg-[#181a20] border-2 border-slate-700 p-3 flex items-center justify-around relative rounded-sm">
-              <!-- 左卷轴 -->
-              <div class="w-12 h-12 rounded-full border-4 border-slate-600 bg-slate-800 flex items-center justify-center relative shadow-inner" :class="{ 'animate-spin': isPlaying }" style="animation-duration: 3s;">
-                <div class="w-3 h-3 bg-pixel-bg rounded-full"></div>
-                <div class="absolute w-1 h-full bg-slate-600"></div>
-                <div class="absolute h-1 w-full bg-slate-600"></div>
+                <!-- 播放时的黑胶小彩蛋角标 -->
+                <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/80 border border-white/20 font-pixel text-[9px] text-rose-300 flex items-center gap-1.5">
+                  <span class="w-1.5 h-1.5 rounded-full bg-rose-500" :class="{ 'animate-ping': isPlaying }"></span>
+                  <span>{{ isPlaying ? 'PLAYING' : 'OFFICIAL CD' }}</span>
+                </div>
+
+                <div class="absolute bottom-2 right-2 px-2 py-0.5 bg-black/80 border border-white/20 font-pixel text-[9px] text-pixel-amber">
+                  AI 生成单曲
+                </div>
               </div>
 
-              <!-- 磁带标签贴纸 -->
-              <div class="px-3 py-1 bg-rose-950/60 border border-rose-500/40 text-center z-10 max-w-[140px]">
-                <div class="font-pixel text-[10px] text-rose-300 truncate">{{ currentSong?.title }}</div>
-                <div class="text-[9px] text-slate-400 font-mono">{{ currentSong?.style?.split('/')[0] }}</div>
-              </div>
-
-              <!-- 右卷轴 -->
-              <div class="w-12 h-12 rounded-full border-4 border-slate-600 bg-slate-800 flex items-center justify-center relative shadow-inner" :class="{ 'animate-spin': isPlaying }" style="animation-duration: 3s;">
-                <div class="w-3 h-3 bg-pixel-bg rounded-full"></div>
-                <div class="absolute w-1 h-full bg-slate-600"></div>
-                <div class="absolute h-1 w-full bg-slate-600"></div>
-              </div>
-            </div>
-
-            <!-- 播放器底部微控制器 -->
-            <div class="mt-4 flex items-center justify-between pt-2 border-t border-pixel-border">
-              <button 
-                @click="togglePlay"
-                class="pixel-btn px-4 py-1.5 bg-rose-600 text-white border-rose-600 hover:bg-rose-500 text-xs font-pixel gap-2"
+              <!-- 黑胶唱片露出一角动效 -->
+              <div 
+                class="absolute -right-5 top-8 w-32 h-32 rounded-full border-4 border-slate-900 bg-neutral-900 hidden sm:flex items-center justify-center -z-10 shadow-pixel-sm transition-all duration-700"
+                :class="isPlaying ? 'translate-x-6 rotate-180 animate-spin' : 'translate-x-0'"
+                style="animation-duration: 4s;"
               >
-                <component :is="isPlaying ? Pause : Play" class="w-3.5 h-3.5 fill-current" />
-                <span>{{ isPlaying ? 'PAUSE' : 'PLAY PREVIEW' }}</span>
-              </button>
-
-              <span class="text-[11px] font-mono text-slate-400">
-                {{ isPlaying ? 'PLAYING...' : 'STANDBY' }}
-              </span>
+                <div class="w-10 h-10 rounded-full border-2 border-rose-500 bg-rose-950 flex items-center justify-center">
+                  <div class="w-2 h-2 rounded-full bg-black"></div>
+                </div>
+              </div>
             </div>
 
-            <!-- 隐藏的 HTML5 audio 元素 -->
+            <!-- 播放控制与进度条 -->
+            <div class="w-full max-w-[320px] mt-5 space-y-3 bg-pixel-bg p-4 border border-pixel-border">
+              
+              <!-- 进度条滑块 -->
+              <div class="space-y-1">
+                <input 
+                  type="range" 
+                  min="0" 
+                  :max="duration" 
+                  step="0.1"
+                  :value="currentTime" 
+                  @input="onSeekSlider"
+                  class="w-full h-1.5 bg-slate-800 rounded-none appearance-none cursor-pointer accent-rose-500"
+                />
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-400">
+                  <span class="text-rose-400">{{ formatTime(currentTime) }}</span>
+                  <span class="flex items-center gap-1">
+                    <Clock class="w-3 h-3 text-slate-500" />
+                    <span>{{ formatTime(duration) }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- 播放控制按钮栏 -->
+              <div class="flex items-center justify-between pt-1">
+                <button 
+                  @click="togglePlay"
+                  class="pixel-btn px-4 py-2 bg-rose-600 text-white border-rose-600 hover:bg-rose-500 text-xs font-bold gap-2"
+                >
+                  <component :is="isPlaying ? Pause : Play" class="w-4 h-4 fill-current" />
+                  <span>{{ isPlaying ? '暂停试听' : '试听原曲' }}</span>
+                </button>
+
+                <div class="flex items-center gap-2">
+                  <a 
+                    :href="currentSong?.neteaseUrl || 'https://music.163.com'" 
+                    target="_blank" 
+                    class="pixel-btn px-3 py-1.5 bg-red-600/90 text-white border-red-600 hover:bg-red-500 text-xs font-bold gap-1"
+                    title="前往网易云音乐在线试听与评论"
+                    @mouseenter="sound.playHover()"
+                  >
+                    <Disc class="w-3.5 h-3.5" />
+                    <span>网易云</span>
+                    <ExternalLink class="w-3 h-3" />
+                  </a>
+
+                  <a 
+                    v-if="music.artistNeteaseUrl"
+                    :href="music.artistNeteaseUrl" 
+                    target="_blank" 
+                    class="p-1.5 border border-slate-700 hover:border-slate-400 text-slate-400 hover:text-white"
+                    title="访问网易云音乐人主页"
+                    @mouseenter="sound.playHover()"
+                  >
+                    <UserCheck class="w-4 h-4 text-rose-400" />
+                  </a>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- HTML5 audio 元素 -->
             <audio 
               ref="audioElement" 
               :src="currentSong?.audioSrc" 
+              @timeupdate="onTimeUpdate"
+              @loadedmetadata="onAudioLoaded"
               @ended="onAudioEnded"
-              preload="none"
+              preload="metadata"
             ></audio>
           </div>
 
-          <!-- 右侧：曲目详情与官方平台直达 -->
-          <div class="flex-1 space-y-4">
+          <!-- 右侧：双语实时滚动歌词与歌曲解析面板 [7 cols] -->
+          <div class="lg:col-span-7 flex flex-col h-full space-y-4">
             
-            <div class="space-y-2">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="px-2 py-0.5 bg-rose-500/10 border border-rose-500/40 text-rose-400 font-pixel text-[11px]">
-                  FEATURED TRACK
-                </span>
-                <span class="px-2 py-0.5 bg-pixel-bg border border-slate-700 text-slate-300 text-xs">
-                  {{ currentSong?.platform }}
-                </span>
+            <!-- 歌曲标题与风格标签 -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-pixel-border">
+              <div>
+                <h3 class="text-xl md:text-2xl font-bold text-white flex items-center gap-2">
+                  <span>{{ currentSong?.title }}</span>
+                  <span class="text-xs md:text-sm font-normal text-slate-400">({{ currentSong?.titleCn }})</span>
+                </h3>
+                <div class="text-xs text-rose-400 font-pixel mt-1">
+                  STYLE: {{ currentSong?.style }} · 时长 {{ currentSong?.duration || '03:24' }}
+                </div>
               </div>
 
-              <h3 class="text-2xl font-bold text-white flex items-center gap-2">
-                <span>{{ currentSong?.title }}</span>
-                <span class="text-sm font-normal text-slate-400">({{ currentSong?.titleCn }})</span>
-              </h3>
-
-              <div class="text-xs text-rose-300/90 font-medium">
-                曲风定位：{{ currentSong?.style }}
+              <!-- 选项卡切换：歌词 vs 介绍 -->
+              <div class="flex items-center gap-1 bg-pixel-bg p-1 border border-pixel-border self-start">
+                <button 
+                  @click="activeTab = 'lyrics'" 
+                  class="px-2.5 py-1 text-xs font-pixel transition-colors"
+                  :class="activeTab === 'lyrics' ? 'bg-rose-600 text-white' : 'text-slate-400 hover:text-white'"
+                >
+                  <FileText class="w-3.5 h-3.5 inline mr-1" />
+                  <span>双语歌词</span>
+                </button>
+                <button 
+                  @click="activeTab = 'info'" 
+                  class="px-2.5 py-1 text-xs font-pixel transition-colors"
+                  :class="activeTab === 'info' ? 'bg-rose-600 text-white' : 'text-slate-400 hover:text-white'"
+                >
+                  <ListMusic class="w-3.5 h-3.5 inline mr-1" />
+                  <span>创作解析</span>
+                </button>
               </div>
             </div>
 
-            <p class="text-sm text-slate-300 leading-relaxed bg-pixel-bg/60 p-4 border border-pixel-border">
-              {{ currentSong?.desc }}
-            </p>
+            <!-- 面板 1：双语实时歌词视窗 -->
+            <div v-show="activeTab === 'lyrics'" class="relative flex-1">
+              <div class="flex items-center justify-between text-[11px] text-slate-400 font-pixel pb-2">
+                <span>SYNCHRONIZED LYRICS (点击歌词可跳播)</span>
+                <span class="text-rose-400">日文原词 / 中文释义</span>
+              </div>
 
-            <div class="text-xs text-slate-400 leading-relaxed">
-              {{ music.description }}
+              <!-- 滚动歌词容器 -->
+              <div 
+                ref="lyricsContainer"
+                class="h-[340px] overflow-y-auto pr-3 space-y-4 bg-pixel-bg/80 border border-pixel-border p-4 rounded-none select-none scrollbar-thin scrollbar-thumb-slate-700"
+              >
+                <div 
+                  v-for="(line, idx) in lyricsData" 
+                  :key="idx"
+                  @click="seekLyric(line.time)"
+                  class="cursor-pointer p-2 rounded transition-all duration-200 border-l-2"
+                  :class="idx === currentLyricIndex ? 'active-lyric border-rose-500 bg-rose-950/30' : 'border-transparent hover:bg-slate-800/40 text-slate-400'"
+                >
+                  <!-- 日文原词 -->
+                  <div 
+                    class="font-medium text-sm md:text-base leading-snug"
+                    :class="idx === currentLyricIndex ? 'text-white font-bold scale-[1.01]' : 'text-slate-300'"
+                  >
+                    {{ line.ja }}
+                  </div>
+                  <!-- 中文翻译 -->
+                  <div 
+                    class="text-xs mt-1"
+                    :class="idx === currentLyricIndex ? 'text-rose-300 font-medium' : 'text-slate-500'"
+                  >
+                    {{ line.cn }}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!-- 外部平台直达外链 -->
-            <div class="flex flex-wrap items-center gap-3 pt-2">
-              <!-- 网易云歌曲直达 -->
-              <a 
-                :href="currentSong?.neteaseUrl || 'https://music.163.com'" 
-                target="_blank" 
-                class="pixel-btn px-4 py-2 bg-red-600 text-white border-red-600 hover:bg-red-500 text-xs font-bold gap-2"
-                @mouseenter="sound.playHover()"
-              >
-                <Disc class="w-4 h-4" />
-                <span>网易云音乐在线试听</span>
-                <ExternalLink class="w-3.5 h-3.5 text-white/80" />
-              </a>
+            <!-- 面板 2：创作背景与 AIGC 解析 -->
+            <div v-show="activeTab === 'info'" class="space-y-4 bg-pixel-bg/60 p-5 border border-pixel-border">
+              <div class="space-y-2">
+                <div class="text-xs font-pixel text-slate-400">SONG CONCEPT & STORY:</div>
+                <p class="text-sm text-slate-300 leading-relaxed">
+                  {{ currentSong?.desc }}
+                </p>
+              </div>
 
-              <!-- 网易云艺人主页（可选次级入口） -->
-              <a 
-                v-if="music.artistNeteaseUrl"
-                :href="music.artistNeteaseUrl" 
-                target="_blank" 
-                class="pixel-btn px-3 py-2 bg-pixel-bg border-slate-700 hover:border-slate-400 text-slate-300 text-xs gap-1.5"
-                @mouseenter="sound.playHover()"
-              >
-                <span>音乐人主页</span>
-                <ExternalLink class="w-3 h-3 text-slate-500" />
-              </a>
+              <div class="space-y-2 pt-2 border-t border-slate-800">
+                <div class="text-xs font-pixel text-slate-400">AIGC WORKFLOW (创作工作流):</div>
+                <ul class="text-xs text-slate-300 space-y-1.5 font-mono">
+                  <li class="flex items-start gap-2">
+                    <span class="text-rose-400">></span>
+                    <span><strong>提示词工程 (Prompting)</strong>：构建日系 J-Pop、青春元气动漫 OST 的情绪节拍提示词；</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-rose-400">></span>
+                    <span><strong>人声与配器</strong>：调校清脆快节奏的合成器电音、管乐与灵动鼓点；</span>
+                  </li>
+                  <li class="flex items-start gap-2">
+                    <span class="text-rose-400">></span>
+                    <span><strong>母带与发行</strong>：降噪并调整动态增益，成功通过网易云音乐人官方审核并正式上线。</span>
+                  </li>
+                </ul>
+              </div>
             </div>
 
           </div>
 
-        </div>
-
-        <!-- 未来支持更多歌曲展开时的设计（未来扩展槽） -->
-        <div v-if="music.songs.length > 1" class="mt-8 pt-4 border-t border-pixel-border">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-pixel text-slate-400">TRACK LIST (共 {{ music.songs.length }} 首)</span>
-            <button 
-              @click="toggleShowAll"
-              class="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 font-pixel"
-            >
-              <span>{{ showAll ? 'COLLAPSE' : 'EXPAND ALL' }}</span>
-              <component :is="showAll ? ChevronUp : ChevronDown" class="w-3.5 h-3.5" />
-            </button>
-          </div>
         </div>
 
       </div>
